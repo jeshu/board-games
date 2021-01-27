@@ -1,3 +1,5 @@
+import './styles/main.scss';
+
 function component () {
   const element = document.createElement('div');
   console.log('woo------------------------');
