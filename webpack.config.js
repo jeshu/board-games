@@ -10,14 +10,18 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
     new HtmlWebpackPlugin({
-      template: 'src/index.html'
+      template: 'src/index.html',
     }),
     new CopyPlugin({
       patterns: [
-        { from: "src/pages", to: "pages" },
-        { from: "src/styles/*.css", to({ context, absoluteFilename }) {
-          return "css/[name].[ext]";
-        }, },
+        { from: 'src/images', to: 'images' },
+        { from: 'src/pages', to: 'pages' },
+        {
+          from: 'src/styles/*.css',
+          to({ context, absoluteFilename }) {
+            return 'css/[name].[ext]';
+          },
+        },
       ],
     }),
   ],
@@ -39,6 +43,16 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
       },
     ],
   },
