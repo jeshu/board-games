@@ -14,8 +14,8 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'src/images', to: 'images' },
-        { from: 'src/pages', to: 'pages' },
+        { from: path.resolve(__dirname, 'src/images'), to: path.resolve(__dirname, 'dist/images') },
+        { from: path.resolve(__dirname, 'src/pages'), to: path.resolve(__dirname, 'dist/pages') },
         {
           from: 'src/styles/*.css',
           to({ context, absoluteFilename }) {
@@ -41,6 +41,14 @@ module.exports = {
               implementation: require('sass'),
               sourceMap: true,
             },
+          },
+        ],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
           },
         ],
       },

@@ -11,8 +11,8 @@ body {
     height: 100vh;
     display: grid;
     place-items: center;
-    background-color: yellow;
-    background:'/images/background.jpg';
+    background:url('../images/background.jpg') center no-repeat;
+    background-size: cover;
     .pageCard {
       min-height: 50vh;
       min-width: 60vh;
