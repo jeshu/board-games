@@ -1,4 +1,4 @@
-import './styles/main.scss';
+import '../styles/main.scss';
 
 function component () {
   const element = document.createElement('div');
@@ -6,4 +6,4 @@ function component () {
   return element;
 }
 
-document.appendChild(component())
+document.body.appendChild(component())

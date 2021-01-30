@@ -5,17 +5,33 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: {
+    main: './src/scripts/main.js',
+    tictactoe: './src/scripts/tictactoe.js',
+  },
   devtool: 'inline-source-map',
   plugins: [
     new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
     new HtmlWebpackPlugin({
+      filename:'index.html',
       template: 'src/index.html',
+      chunks:['main'],
+    }),
+    new HtmlWebpackPlugin({
+      filename:'pages/tictactoe.html',
+      template: 'src/pages/tictactoe.html',
+      chunks:['tictactoe'],
     }),
     new CopyPlugin({
       patterns: [
-        { from: path.resolve(__dirname, 'src/images'), to: path.resolve(__dirname, 'dist/images') },
-        { from: path.resolve(__dirname, 'src/pages'), to: path.resolve(__dirname, 'dist/pages') },
+        {
+          from: path.resolve(__dirname, 'src/images'),
+          to: path.resolve(__dirname, 'dist/images'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/pages'),
+          to: path.resolve(__dirname, 'dist/pages'),
+        },
         {
           from: 'src/styles/*.css',
           to({ context, absoluteFilename }) {
@@ -65,7 +81,7 @@ module.exports = {
     ],
   },
   output: {
-    filename: 'main.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
 };
