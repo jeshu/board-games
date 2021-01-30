@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
@@ -11,6 +12,12 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: "[name].css",
+      chunkFilename: "[id].css",
+    }),
     new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
     new HtmlWebpackPlugin({
       filename:'index.html',
@@ -27,10 +34,6 @@ module.exports = {
         {
           from: path.resolve(__dirname, 'src/images'),
           to: path.resolve(__dirname, 'dist/images'),
-        },
-        {
-          from: path.resolve(__dirname, 'src/pages'),
-          to: path.resolve(__dirname, 'dist/pages'),
         },
         {
           from: 'src/styles/*.css',
@@ -55,6 +58,9 @@ module.exports = {
             options: {
               // Prefer `dart-sass`
               implementation: require('sass'),
+              sassOptions: {
+                fiber: false,
+              },
               sourceMap: true,
             },
           },
