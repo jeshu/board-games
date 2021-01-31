@@ -1,6 +1,8 @@
 @import './_base.scss', './_colors.scss';
 
 .container {
+  height: 100vh;
+  background-color:lightblue;
   .title {
     display: block;
     background: $han-blue;
@@ -42,17 +44,21 @@
   .game-container {
     min-height: 50vh;
     .gameGrid {
+      background-image:paint(checkerboard);
       display:grid;
-      grid-template-columns: repeat(3,30vw);
-      grid-template-columns: repeat(3,30vw);
+      grid-template-rows: repeat(3,min(33%, 30vh));
+      grid-template-columns: repeat(3,min(33%, 30vh));
       place-content: center;
       .gameCells{
         aspect-ratio:1;
-        outline:2px solid $han-blue;
         display:grid;
         place-items: center;
-        &::after {
+        &.cross::after {
           content:'X';
+          font-size:2rem;
+        }
+        &.circle::after {
+          content:'O';
           font-size:2rem;
         }
       }
@@ -70,7 +76,6 @@
       aspect-ratio: 1/1;
       width:4rem;
       font-size:2rem;
-      border:none;
       background:$cadet-blue-crayola;
     }
   }
@@ -92,12 +97,12 @@
         aspect-ratio:auto;
       }
     }
-    .game-container {
-      .gameGrid {
-        grid-template-rows: repeat(3,20vw);
-        grid-template-columns: repeat(3,20vw);
-      }
-    }
+    // .game-container {
+    //   .gameGrid {
+    //     // grid-template-rows: repeat(3,20vw);
+    //     // grid-template-columns: repeat(3,20vw);
+    //   }
+    // }
     .scoreBar {
       width: calc(30vw - 1rem);
       grid-template-columns: repeat(2, 50%);

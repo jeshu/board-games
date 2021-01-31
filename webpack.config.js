@@ -36,6 +36,10 @@ module.exports = {
           to: path.resolve(__dirname, 'dist/images'),
         },
         {
+          from: path.resolve(__dirname, 'src/houdini'),
+          to: path.resolve(__dirname, 'dist/houdini'),
+        },
+        {
           from: 'src/styles/*.css',
           to({ context, absoluteFilename }) {
             return 'css/[name].[ext]';
