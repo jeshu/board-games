@@ -2,10 +2,12 @@
 
 .container {
   height: 100vh;
+  width: 100vw;
   display: grid;
-  place-items: center;
+  grid-template-rows: auto 4rem;
   background: url('../images/background.jpg') center no-repeat;
   background-size: cover;
+  place-items: center;
   .pageCard {
     min-width: 60vh;
     max-width: 800px;
@@ -19,21 +21,25 @@
     h1 {
       font-size: 3rem;
     }
-    .links {
-      position: absolute;
-      height: 3rem;
-      background-color: $pale-silver;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      color: #333333;
-      bottom: 0;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: nowrap;
-      .link {
-        padding: 10px;
-        font-weight: 700;
+  }
+  .links {
+    height: 4rem;
+    background-color: $pale-silver;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    color: #333333;
+    bottom: 0;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    bottom: 0;
+
+    .link {
+      padding: 10px;
+      font-weight: 700;
+      &:hover{
+        background-color: rgba(255, 255, 255,0.5)
       }
     }
   }
