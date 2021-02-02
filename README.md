@@ -1,2 +1,11 @@
-# layouts-html
-html repo for basic minimal CSS  layouts
+# Board Games
+
+Repository to do some board games.
+
+## TicTacToe
+
+## Sudoko
+
+## Checker
+
+## GO
