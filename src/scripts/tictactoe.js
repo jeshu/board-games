@@ -3,42 +3,53 @@ import '../styles/tictactoe.scss';
 let isPlayerX = true;
 const players = document.querySelectorAll('.playerNames');
 const cells = document.querySelectorAll('.gameCells');
+
 const winingCombinations = [
-  '7',
-  '70',
-  '700',
-  '111',
-  '222',
-  '444',
-  '124',
-  '421',
+  0b111000000,
+  0b000111000,
+  0b000000111,
+  0b100100100,
+  0b010010010,
+  0b001001001,
+  0b100010001,
+  0b001010100,
 ];
 
 function checkGameStatus() {
-  let xVals = '',
-    oVals = '';
-  cells.forEach((cell) => {
+  let playerX = 0b000000000;
+  let playerO = 0b000000000;
+  cells.forEach((cell, index) => {
     if (cell.classList.contains('cross')) {
-      xVals += 1;
-    } else {
-      xVals += 0;
+      playerX |= 1 << index;
     }
     if (cell.classList.contains('circle')) {
-      oVals += 1;
-    } else {
-      oVals += 0;
+      playerO |= 1 << index;
     }
   });
-  console.log(xVals, oVals);
-  xVals = parseInt(xVals, 2).toString(8);
-  oVals = parseInt(oVals, 2).toString(8);
-  console.log(xVals, oVals);
-  if (winingCombinations.find((val) => val === xVals)) {
-    console.log('X wins....');
+  for (let condition of winingCombinations) {
+    if ((playerX & condition) == condition) {
+      return {
+        status: 'done',
+        winner: 'cross',
+        condition,
+      };
+    }
+    if ((playerO & condition) == condition) {
+      return {
+        status: 'done',
+        winner: 'circle',
+        condition,
+      };
+    }
   }
-  if (winingCombinations.find((val) => val === oVals)) {
-    console.log('O wins....');
+  if ((playerX | playerO) == 0b111111111) {
+    return {
+      status: 'draw',
+    };
   }
+  return {
+    status: 'cont',
+  };
 }
 
 function updatePlayerStatus() {
@@ -50,16 +61,6 @@ function updatePlayerStatus() {
       player.classList.add('active');
     }
   });
-}
-
-function playerTurn(evt) {
-  const classes = evt.target.className.toLowerCase();
-  if (!classes.match(/(cross)|(circle)/)) {
-    evt.target.classList.add(isPlayerX ? 'cross' : 'circle');
-  }
-  checkGameStatus();
-  updatePlayerStatus();
-  isPlayerX = !isPlayerX;
 }
 
 function reset() {
@@ -76,10 +77,20 @@ function reset() {
   });
 }
 
+function boardClickListener(evt) {
+  const classes = evt.target.className.toLowerCase();
+  if (!classes.match(/(cross)|(circle)/)) {
+    evt.target.classList.add(isPlayerX ? 'cross' : 'circle');
+  }
+  checkGameStatus();
+  updatePlayerStatus();
+  isPlayerX = !isPlayerX;
+}
+
 function Tictactoe() {
   isPlayerX = true;
   const board = document.querySelector('.gameGrid');
-  board.addEventListener('click', playerTurn);
+  board.addEventListener('click', boardClickListener);
 }
 
 Tictactoe();
