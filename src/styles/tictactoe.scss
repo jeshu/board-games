@@ -44,7 +44,7 @@
   .game-container {
     min-height: 50vh;
     .gameGrid {
-      background-image:paint(checkerboard);
+      background-image:paint(tictacboard);
       display:grid;
       grid-template-rows: repeat(3,min(33%, 30vh));
       grid-template-columns: repeat(3,min(33%, 30vh));
@@ -53,13 +53,11 @@
         aspect-ratio:1;
         display:grid;
         place-items: center;
-        &.cross::after {
-          content:'X';
-          font-size:2rem;
+        &.cross {
+          background-image:paint(crossMark);
         }
-        &.circle::after {
-          content:'O';
-          font-size:2rem;
+        &.circle {
+          background-image:paint(circleMark);
         }
       }
     }
@@ -97,12 +95,6 @@
         aspect-ratio:auto;
       }
     }
-    // .game-container {
-    //   .gameGrid {
-    //     // grid-template-rows: repeat(3,20vw);
-    //     // grid-template-columns: repeat(3,20vw);
-    //   }
-    // }
     .scoreBar {
       width: calc(30vw - 1rem);
       grid-template-columns: repeat(2, 50%);

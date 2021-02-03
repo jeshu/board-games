@@ -29,14 +29,14 @@ function checkGameStatus() {
   for (let condition of winingCombinations) {
     if ((playerX & condition) == condition) {
       return {
-        status: 'done',
+        status: 'complete',
         winner: 'cross',
         condition,
       };
     }
     if ((playerO & condition) == condition) {
       return {
-        status: 'done',
+        status: 'complete',
         winner: 'circle',
         condition,
       };
@@ -75,22 +75,53 @@ function reset() {
       player.classList.remove('active');
     }
   });
+  document.querySelector('.buttonContainer').style.display = 'none';
+  const board = document.querySelector('.gameGrid');
+  board.addEventListener('click', boardClickListener);
+}
+function updateWinners(gameState) {
+  const scoreContainer = document.querySelector(`.${gameState.winner} .score`);
+  const score = parseInt(scoreContainer.innerText);
+  scoreContainer.innerText = score + 1;
+
+  console.log(gameState.condition);
+  enableReset();
+}
+
+function enableReset() {
+  const board = document.querySelector('.gameGrid');
+  board.removeEventListener('click', boardClickListener);
+  document.querySelector('.buttonContainer').style.display = 'grid';
 }
 
 function boardClickListener(evt) {
   const classes = evt.target.className.toLowerCase();
-  if (!classes.match(/(cross)|(circle)/)) {
+  if (classes.indexOf('gamecells') !== -1) {
+    if (classes.match(/(cross)|(circle)/)) {
+      return;
+    }
     evt.target.classList.add(isPlayerX ? 'cross' : 'circle');
+    isPlayerX = !isPlayerX;
+    const gameState = checkGameStatus();
+    const { status } = gameState;
+    switch (status) {
+      case 'complete':
+        updateWinners(gameState);
+        break;
+      case 'draw':
+        enableReset();
+        break;
+      case 'cont':
+        updatePlayerStatus();
+        break;
+    }
   }
-  checkGameStatus();
-  updatePlayerStatus();
-  isPlayerX = !isPlayerX;
 }
 
 function Tictactoe() {
   isPlayerX = true;
-  const board = document.querySelector('.gameGrid');
-  board.addEventListener('click', boardClickListener);
+  document.querySelector('.resetButton').addEventListener('click', reset);
+  reset();
 }
 
 Tictactoe();
