@@ -78,6 +78,7 @@ function reset() {
   document.querySelector('.buttonContainer').style.display = 'none';
   const board = document.querySelector('.gameGrid');
   board.addEventListener('click', boardClickListener);
+  board.style.setProperty('--win-condition', '');
 }
 function updateWinners(gameState) {
   const scoreContainer = document.querySelector(`.${gameState.winner} .score`);
@@ -85,6 +86,8 @@ function updateWinners(gameState) {
   scoreContainer.innerText = score + 1;
 
   console.log(gameState.condition);
+  const board = document.querySelector('.gameGrid');
+  board.style.setProperty('--win-condition', gameState.condition);
   enableReset();
 }
 
