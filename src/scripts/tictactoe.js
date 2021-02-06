@@ -122,7 +122,7 @@ function updateBoard(isFromAi) {
         break;
       case 'cont':
         updatePlayerStatus();
-        !isFromAi && setTimeout(aiPlayerTurn, 1000);
+        !isFromAi && setTimeout(aiPlayerTurn, 10);
         break;
     }
 }
