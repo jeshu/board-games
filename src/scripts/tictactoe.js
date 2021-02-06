@@ -61,6 +61,7 @@ function updatePlayerStatus() {
       player.classList.add('active');
     }
   });
+  isPlayerX = !isPlayerX;
 }
 
 function reset() {
@@ -80,6 +81,7 @@ function reset() {
   board.addEventListener('click', boardClickListener);
   board.style.setProperty('--win-condition', '');
 }
+
 function updateWinners(gameState) {
   const scoreContainer = document.querySelector(`.${gameState.winner} .score`);
   const score = parseInt(scoreContainer.innerText);
@@ -91,21 +93,25 @@ function updateWinners(gameState) {
   enableReset();
 }
 
+function aiPlayerTurn() {
+  // basic version
+  const className = isPlayerX ? 'cross' : 'circle';
+  const cells = document
+    .querySelectorAll('.gameCells:not(.cross):not(.circle)')
+    const newPosition = Math.floor(Math.random() * cells.length);
+
+  console.log('AI - POS - ', cells.length, newPosition, className);
+  cells[newPosition].classList.add(className);
+  updateBoard(true);
+}
+
 function enableReset() {
   const board = document.querySelector('.gameGrid');
   board.removeEventListener('click', boardClickListener);
   document.querySelector('.buttonContainer').style.display = 'grid';
 }
-
-function boardClickListener(evt) {
-  const classes = evt.target.className.toLowerCase();
-  if (classes.indexOf('gamecells') !== -1) {
-    if (classes.match(/(cross)|(circle)/)) {
-      return;
-    }
-    evt.target.classList.add(isPlayerX ? 'cross' : 'circle');
-    isPlayerX = !isPlayerX;
-    const gameState = checkGameStatus();
+function updateBoard(isFromAi) {
+  const gameState = checkGameStatus();
     const { status } = gameState;
     switch (status) {
       case 'complete':
@@ -116,8 +122,18 @@ function boardClickListener(evt) {
         break;
       case 'cont':
         updatePlayerStatus();
+        !isFromAi && setTimeout(aiPlayerTurn, 1000);
         break;
     }
+}
+function boardClickListener(evt) {
+  const classes = evt.target.className.toLowerCase();
+  if (classes.indexOf('gamecells') !== -1) {
+    if (classes.match(/(cross)|(circle)/)) {
+      return;
+    }
+    evt.target.classList.add(isPlayerX ? 'cross' : 'circle');
+    updateBoard()
   }
 }
 
