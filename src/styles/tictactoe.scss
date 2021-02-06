@@ -62,18 +62,19 @@
     }
   }
   .buttonContainer {
-    display:grid;
-    grid-template-columns: repeat(2, 4rem);
+    background:$maximum-yellow-red;
+    display:grid !important;
     width:auto;
-    margin:0 auto;
-    max-width: 10rem;
-    padding:1rem;
-    gap: 1rem;
-    .card{
-      aspect-ratio: 1/1;
-      width:4rem;
-      font-size:2rem;
-      background:$cadet-blue-crayola;
+    margin:0.5rem;
+    height: 3rem;
+    place-items: center;
+    .resetButton{
+      display: inline-grid;
+      width: 100%;
+      place-items: center;
+      background : $maximum-yellow-red;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
     }
   }
 
