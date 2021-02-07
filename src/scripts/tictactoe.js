@@ -15,16 +15,16 @@ const winingCombinations = [
   0b001010100,
 ];
 
-function checkGameStatus() {
+function checkPlayerStatus(playerPositions) {
   let playerX = 0b000000000;
   let playerO = 0b000000000;
-  cells.forEach((cell, index) => {
-    if (cell.classList.contains('cross')) {
-      playerX |= 1 << index;
-    }
-    if (cell.classList.contains('circle')) {
-      playerO |= 1 << index;
-    }
+  playerPositions.forEach(pos => {
+    // if (cell.classList.contains('cross')) {
+    //   playerX |= 1 << index;
+    // }
+    // if (cell.classList.contains('circle')) {
+    //   playerO |= 1 << index;
+    // }
   });
   for (let condition of winingCombinations) {
     if ((playerX & condition) == condition) {
@@ -96,35 +96,39 @@ function updateWinners(gameState) {
 function aiPlayerTurn() {
   // basic version
   const className = isPlayerX ? 'cross' : 'circle';
-  const cells = document
-    .querySelectorAll('.gameCells:not(.cross):not(.circle)')
-    const newPosition = Math.floor(Math.random() * cells.length);
+  const cells = document.querySelectorAll(
+    '.gameCells:not(.cross):not(.circle)',
+  );
+  const newPosition = Math.floor(Math.random() * cells.length);
 
   console.log('AI - POS - ', cells.length, newPosition, className);
   cells[newPosition].classList.add(className);
   updateBoard(true);
 }
 
+function optimalScore() {}
+
 function enableReset() {
   const board = document.querySelector('.gameGrid');
   board.removeEventListener('click', boardClickListener);
   document.querySelector('.buttonContainer').style.display = 'grid';
 }
+
 function updateBoard(isFromAi) {
   const gameState = checkGameStatus();
-    const { status } = gameState;
-    switch (status) {
-      case 'complete':
-        updateWinners(gameState);
-        break;
-      case 'draw':
-        enableReset();
-        break;
-      case 'cont':
-        updatePlayerStatus();
-        !isFromAi && setTimeout(aiPlayerTurn, 10);
-        break;
-    }
+  const { status } = gameState;
+  switch (status) {
+    case 'complete':
+      updateWinners(gameState);
+      break;
+    case 'draw':
+      enableReset();
+      break;
+    case 'cont':
+      updatePlayerStatus();
+      !isFromAi && setTimeout(aiPlayerTurn, 10);
+      break;
+  }
 }
 function boardClickListener(evt) {
   const classes = evt.target.className.toLowerCase();
@@ -133,7 +137,7 @@ function boardClickListener(evt) {
       return;
     }
     evt.target.classList.add(isPlayerX ? 'cross' : 'circle');
-    updateBoard()
+    updateBoard();
   }
 }
 
