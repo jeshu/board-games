@@ -15,12 +15,8 @@ const winingCombinations = [
   0b001010100,
 ];
 
-
-
 let playerCross = 0b000000000;
 let playerCircle = 0b000000000;
-
-function optimalScore() {}
 
 function enableReset() {
   const board = document.querySelector('.gameGrid');
@@ -29,19 +25,17 @@ function enableReset() {
 }
 
 function updateGameStatus(playerPositions, isFromAi) {
-  console.log(isPlayerX, playerPositions);
   const gameState = checkPlayerStatus(playerPositions);
   const { status, player } = gameState;
-  console.log((playerCross >> 0).toString(2), (playerCircle >> 0).toString(2));
-  if(status === 'win') {
-    updateWinners({...gameState, winner: isPlayerX ? 'cross':'circle'});
+  if (status === 'win') {
+    updateWinners({ ...gameState, winner: isPlayerX ? 'cross' : 'circle' });
   } else {
-    if(isPlayerX) {
+    if (isPlayerX) {
       playerCross = player;
     } else {
       playerCircle = player;
     }
-    if((playerCircle | playerCross) === 0b111111111) {
+    if ((playerCircle | playerCross) === 0b111111111) {
       enableReset();
       return false;
     } else {
@@ -53,8 +47,8 @@ function updateGameStatus(playerPositions, isFromAi) {
 
 function checkPlayerStatus(playerPositions) {
   let player = 0b000000000;
-  playerPositions.forEach(pos => {
-    if(pos !== null) {
+  playerPositions.forEach((pos) => {
+    if (pos !== null) {
       player |= 1 << pos;
     }
   });
@@ -68,10 +62,24 @@ function checkPlayerStatus(playerPositions) {
   }
   return {
     status: 'cont',
-    player
+    player,
   };
 }
 
+function optimalPos(empty, currentPlayer) {
+  let score;
+  if (empty.length === 1) {
+    const status = checkPlayerStatus('circle', currentPlayer).status;
+    score = status === 'cont' ? 0 : currentPlayer ? 1 : -1;
+    return score;
+    
+  }
+  const scores = [];
+  for (let i = 0; i < empty.length; i++) {
+    scores[i] = optimalPos([empty[i]], !currentPlayer)
+  }
+  console.log(scores);
+}
 
 function aiPlayerTurn() {
   // basic version
@@ -79,14 +87,16 @@ function aiPlayerTurn() {
   const cells = document.querySelectorAll(
     '.gameCells:not(.cross):not(.circle)',
   );
+  optimalPos(cells, true);
   const newPosition = Math.floor(Math.random() * cells.length);
 
   console.log('AI - POS - ', cells.length, newPosition, className);
   cells[newPosition].classList.add(className);
-  
+
   const pos = [];
-  document.querySelectorAll(`.${className}`)
-    .forEach(el=>pos.push(el.getAttribute('data-index')));
+  document
+    .querySelectorAll(`.${className}`)
+    .forEach((el) => pos.push(el.getAttribute('data-index')));
   updateGameStatus(pos, true);
 }
 
@@ -96,13 +106,14 @@ function boardClickListener(evt) {
     if (classes.match(/(cross)|(circle)/)) {
       return;
     }
-    const className = isPlayerX ? 'cross' : 'circle'
+    const className = isPlayerX ? 'cross' : 'circle';
     evt.target.classList.add(className);
     const pos = [];
-    document.querySelectorAll(`.${className}`)
-      .forEach(el=>pos.push(el.getAttribute('data-index')));
+    document
+      .querySelectorAll(`.${className}`)
+      .forEach((el) => pos.push(el.getAttribute('data-index')));
     updateGameStatus(pos, false);
-  }  
+  }
 }
 
 function updatePlayerStatus() {
@@ -121,7 +132,7 @@ function updateWinners(gameState) {
   const scoreContainer = document.querySelector(`.${gameState.winner} .score`);
   const score = parseInt(scoreContainer.innerText);
   scoreContainer.innerText = score + 1;
-  
+
   const board = document.querySelector('.gameGrid');
   board.style.setProperty('--win-condition', gameState.condition);
   enableReset();
