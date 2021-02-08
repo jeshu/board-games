@@ -34,7 +34,6 @@ class TicTacToeBoard {
         '000000000'.substr(winingCombinations.length) + winingCombinations;
       for (let i = 0; i < 9; i++) {
         if (winingCombinations[i] === '1') {
-          console.log(winingCombinations, i,Math.floor(i / 3));
           this.highlightWinings(
             ctx,
             boxWidth * 0.05 + xStart + boxWidth * (2-(i % 3)),

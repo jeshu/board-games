@@ -47,6 +47,7 @@ function updateGameStatus(playerPositions, isFromAi) {
 
 function checkPlayerStatus(playerPositions) {
   let player = 0b000000000;
+  console.log(playerPositions);
   playerPositions.forEach((pos) => {
     if (pos !== null) {
       player |= 1 << pos;
@@ -70,40 +71,95 @@ function isWinner(player) {
   };
 }
 
-function optimalPos(board, currentPlayer) {
-  let score;
-  const {cells, x : playerCross, o:playerCircle, fullBoard} = board;
-  if (cells.length === 1) {
-    const status = checkPlayerStatus('circle', currentPlayer).status;
-    score = status === 'cont' ? 0 : currentPlayer ? 1 : -1;
-    return score;
-    
-  }
-  const scores = [];
-  for (let i = 0; i < cells.length; i++) {
-    if(currentPlayer) {
-      scores[i] = optimalPos([], true)
-    } else {
-
+function optimalPos(board) {
+  let bestScore = -Infinity;
+  let move;
+  const boardArr = board.fullBoard;
+  for (let i = 0; i < boardArr.length; i++) {
+    if (boardArr[i] === '0') {
+      board.ai = [...board.ai, Math.abs(i - 8)];
+      board.fullBoard[i] = '1';
+      let score = minMax({ ...board }, 0, false);
+      board.fullBoard[i] = '0';
+      board.ai.pop();
+      if (score > bestScore) {
+        bestScore = score;
+        move = i;
+      }
     }
-    scores[i] = optimalPos([empty[i]], !currentPlayer)
   }
-  console.log(scores);
+  return move;
+}
+let counts = 0;
+function minMax(board, depth, isMaximizing) {
+  console.log('minMax', isMaximizing, board.x, board.ai);
+  let result = isMaximizing
+    ? checkPlayerStatus(board.ai)
+    : checkPlayerStatus(board.x);
+  console.log('status',isMaximizing, result.status);
+  if (result.status !== 'cont') {
+    return isMaximizing ? 10 : -10;
+  }
+  if (++counts > 5) return 0;
+  let bestScore = Infinity * (isMaximizing ? -1 : 1);
+  const boardArr = [...board.fullBoard];
+  console.log(boardArr);
+  if (isMaximizing) {
+    for (let i = 0; i < boardArr.length; i++) {
+      if (boardArr[i] === '0') {
+        board.ai = [...board.ai, Math.abs(i - 8)];
+        board.fullBoard[i] = '1';
+        let score = minMax({ ...board }, depth + 1, false);
+        board.fullBoard[i] = '0';
+        board.ai.pop();
+        bestScore = Math.max(score, bestScore);
+      }
+    }
+  } else {
+    for (let i = 0; i < boardArr.length; i++) {
+      if (boardArr[i] === '0') {
+        board.x = [...board.x, Math.abs(i - 8)];
+        board.fullBoard[i] = '1';
+        let score = minMax({ ...board }, depth + 1, true);
+        board.fullBoard[i] = '0';
+        board.x.pop();
+        bestScore = Math.min(score, bestScore);
+      }
+    }
+  }
+  console.log(bestScore);
+  return bestScore;
 }
 
+function getPosFromStr(str) {
+  return str
+    .split('')
+    .map((el, i) => (el === '1' ? Math.abs(i - 8) : null))
+    .filter(Boolean);
+}
+
+function numToBinStr(num) {
+  const str = num.toString(2);
+  return '000000000'.substr(str.length) + str;
+}
 function aiPlayerTurn() {
   // basic version
   const className = isPlayerX ? 'cross' : 'circle';
-  const cells = document.querySelectorAll(
-    '.gameCells:not(.cross):not(.circle)',
-  );
+  const cells = document.querySelectorAll('.gameCells');
   const fullBoard = playerCross | playerCircle;
-  console.log(playerCross, playerCircle, (fullBoard>>>0).toString(2));
-  optimalPos({playerCross, playerCircle, fullBoard, cells}, true);
-  const newPosition = Math.floor(Math.random() * cells.length);
-
-  console.log('AI - POS - ', cells.length, newPosition, className);
-  cells[newPosition].classList.add(className);
+  console.log(playerCross, playerCircle);
+  const move = optimalPos(
+    {
+      x: getPosFromStr(numToBinStr(playerCross)),
+      ai: getPosFromStr(numToBinStr(playerCircle)),
+      fullBoard: numToBinStr(fullBoard).split('').reverse(),
+    },
+    true,
+  );
+  console.log('move', move);
+  cells[move].classList.add(className);
+  // const newPosition = Math.floor(Math.random() * cells.length);
+  // cells[newPosition].classList.add(className);
 
   const pos = [];
   document
