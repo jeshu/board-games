@@ -52,6 +52,10 @@ function checkPlayerStatus(playerPositions) {
       player |= 1 << pos;
     }
   });
+  return isWinner(player);
+}
+
+function isWinner(player) {
   for (let condition of winingCombinations) {
     if ((player & condition) == condition) {
       return {
@@ -66,16 +70,22 @@ function checkPlayerStatus(playerPositions) {
   };
 }
 
-function optimalPos(empty, currentPlayer) {
+function optimalPos(board, currentPlayer) {
   let score;
-  if (empty.length === 1) {
+  const {cells, x : playerCross, o:playerCircle, fullBoard} = board;
+  if (cells.length === 1) {
     const status = checkPlayerStatus('circle', currentPlayer).status;
     score = status === 'cont' ? 0 : currentPlayer ? 1 : -1;
     return score;
     
   }
   const scores = [];
-  for (let i = 0; i < empty.length; i++) {
+  for (let i = 0; i < cells.length; i++) {
+    if(currentPlayer) {
+      scores[i] = optimalPos([], true)
+    } else {
+
+    }
     scores[i] = optimalPos([empty[i]], !currentPlayer)
   }
   console.log(scores);
@@ -87,7 +97,9 @@ function aiPlayerTurn() {
   const cells = document.querySelectorAll(
     '.gameCells:not(.cross):not(.circle)',
   );
-  optimalPos(cells, true);
+  const fullBoard = playerCross | playerCircle;
+  console.log(playerCross, playerCircle, (fullBoard>>>0).toString(2));
+  optimalPos({playerCross, playerCircle, fullBoard, cells}, true);
   const newPosition = Math.floor(Math.random() * cells.length);
 
   console.log('AI - POS - ', cells.length, newPosition, className);
