@@ -40,7 +40,7 @@ function updateGameStatus(playerPositions, isFromAi) {
       return false;
     } else {
       updatePlayerStatus();
-      !isFromAi && setTimeout(aiPlayerTurn, 10);
+      !isFromAi && setTimeout(aiPlayerTurn, 100);
     }
   }
 }
@@ -51,7 +51,7 @@ function posArrToBin(arr) {
       pl |= 1 << pos;
     }
   });
-  return pl
+  return pl;
 }
 
 function checkPlayerStatus(playerPositions) {
@@ -95,20 +95,39 @@ function optimalPos(board) {
 }
 let counts = 0;
 function minMax(board, depth, isMaximizing) {
-  console.log('minMax'+depth, isMaximizing, board.x, board.ai);
+  console.log('minMax' + depth, isMaximizing, board.x, board.ai);
   let result = isMaximizing
     ? checkPlayerStatus(board.ai, 'O' + depth)
-    : checkPlayerStatus(board.x, 'X'+ depth);
-  // console.log('check',result.status,depth,isMaximizing ? "O": "X",(board.fullBoard>>>0).toString(2), (result.player>>>0).toString(2));
-  if (result.status !== 'cont' || posArrToBin(board.x) | posArrToBin(board.ai) == 0b111111111) {
-    return posArrToBin(board.x) | posArrToBin(board.ai) == 0b111111111 ? 0 : isMaximizing ? 10 : -10;
+    : checkPlayerStatus(board.x, 'X' + depth);
+    console.log('isDraw', (posArrToBin(board.x) | posArrToBin(board.ai)) , 0b111111111);
+    if (
+    result.status !== 'cont' ||
+    (posArrToBin(board.x) | posArrToBin(board.ai)) == 0b111111111
+  ) {
+    const val =
+      posArrToBin(board.x) | (posArrToBin(board.ai) == 0b111111111)
+        ? 0
+        : isMaximizing
+        ? 10
+        : -10;
+    console.log(
+      'check',
+      val,
+      depth,
+      isMaximizing ? 'O' : 'X',
+      (board.fullBoard >>> 0).toString(2),
+      (result.player >>> 0).toString(2),
+    );
+    return val;
   }
-  let bestScore = Infinity * (isMaximizing ? -1 : 1);
+  if(++counts > 20) return 0;
+  let bestScore = Infinity * (isMaximizing ? 1 : -1);
   const boardArr = [...board.fullBoard];
   console.log(boardArr);
   if (isMaximizing) {
     for (let i = 0; i < boardArr.length; i++) {
       if (boardArr[i] === '0') {
+        console.log('check - ai', i, boardArr.join());
         board.ai = [...board.ai, i];
         board.fullBoard[i] = '1';
         let score = minMax({ ...board }, depth + 1, false);
@@ -119,8 +138,8 @@ function minMax(board, depth, isMaximizing) {
     }
   } else {
     for (let i = 0; i < boardArr.length; i++) {
-      console.log('check', i, boardArr.join())
       if (boardArr[i] === '0') {
+        console.log('check - X', i, boardArr.join());
         board.x = [...board.x, i];
         board.fullBoard[i] = '1';
         let score = minMax({ ...board }, depth + 1, true);
@@ -138,7 +157,7 @@ function getPosFromStr(str) {
   return str
     .split('')
     .map((el, i) => (el === '1' ? Math.abs(i - 8) : null))
-    .filter(Boolean);
+    .filter(el=>el!==null);
 }
 
 function numToBinStr(num) {
