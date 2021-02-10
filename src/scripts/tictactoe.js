@@ -68,7 +68,7 @@ function isWinner(player, other) {
       };
     }
   }
-  if (other && (player | posArrToBin(player)) === 0b111111111) {
+  if (other && (player | posArrToBin(other)) === 0b111111111) {
     return {
       status: 'draw',
       player,
@@ -79,15 +79,14 @@ function isWinner(player, other) {
     player,
   };
 }
-function getScore(board, depth, isBot) {
+function getScore(board, depth, isBot, score= 0) {
   var { ai, h, board } = board;
   var status = checkPlayerStatus(ai, h).status;
+  console.log(board.join(''), depth, isBot, ai,h, score);
 
-  console.log(counter, board.join(''), dpName, isBot, status);
   if (/(win)|(draw)/.test(status)) {
-    var sc = status === 'win' ? 10 : status === 'draw' ? 0 : -10;
-    console.log('-------', status, sc, isBot ? 'ai' : 'h');
-    return sc;
+    var sc = (status && isBot === false) === 'win' ? -10 : status === 'draw' ? 0 : 10;
+    return sc/depth;
   }
   if (isBot) {
     var bestScore = -Infinity;
@@ -96,47 +95,44 @@ function getScore(board, depth, isBot) {
       if (board[cp] === '0') {
         board[cp] = '1';
         ai.push(i);
-        var score = getScore(
+        score = getScore(
           {
             ai,
             h,
             board,
           },
           depth + 1,
-          false,
+          false,score
         );
         ai.pop();
         board[cp] = '0';
-        if (bestScore < score) {
-          bestScore = score;
-        }
+        bestScore = Math.max(bestScore, score);
       }
     }
+    return bestScore;
   } else {
     var bestScore = Infinity;
     for (var i = 0; i < 9; i++) {
       var cp = 8 - i;
       if (board[cp] === '0') {
         board[cp] = '1';
-        ai.push(i);
-        var score = getScore(
+        h.push(i);
+        score = getScore(
           {
             ai,
             h,
             board,
           },
           depth + 1,
-          true,
+          true,score
         );
-        ai.pop();
+        h.pop();
         board[cp] = '0';
-        if (bestScore > score) {
-          bestScore = score;
-        }
+        bestScore = Math.min(bestScore, score);
       }
     }
+    return bestScore;
   }
-  return bestScore;
 }
 
 function bestMove(boardlog) {
@@ -146,9 +142,8 @@ function bestMove(boardlog) {
   for (var i = 0; i < 9; i++) {
     var cp = 8 - i;
     if (board[cp] === '0') {
-      
-      if(ai.length === 0) {
-        return board[4] === '0' ? 4 : i; 
+      if (ai.length === 0) {
+        return board[4] === '0' ? 4 : i;
       }
       board[cp] = '1';
       ai.push(i);
@@ -162,7 +157,6 @@ function bestMove(boardlog) {
         false,
       );
       ai.pop();
-
       board[cp] = '0';
       if (bestScore < score) {
         bestScore = score;
@@ -170,6 +164,7 @@ function bestMove(boardlog) {
       }
     }
   }
+  console.log(';move', move);
   return move;
 }
 
@@ -189,19 +184,15 @@ function aiPlayerTurn() {
   const className = isPlayerX ? 'cross' : 'circle';
   const cells = document.querySelectorAll('.gameCells');
   const fullBoard = playerCross | playerCircle;
-  console.log(playerCross, playerCircle);
   const move = bestMove(
     {
       h: getPosFromStr(numToBinStr(playerCross)),
       ai: getPosFromStr(numToBinStr(playerCircle)),
-      board: numToBinStr(fullBoard),
+      board: numToBinStr(fullBoard).split(''),
     },
     true,
   );
-  console.log('move', move);
   cells[move].classList.add(className);
-  // const newPosition = Math.floor(Math.random() * cells.length);
-  // cells[newPosition].classList.add(className);
 
   const pos = [];
   document
