@@ -85,8 +85,8 @@ function getScore(board, depth, isBot, score= 0) {
   console.log(board.join(''), depth, isBot, ai,h, score);
 
   if (/(win)|(draw)/.test(status)) {
-    var sc = (status && isBot === false) === 'win' ? -10 : status === 'draw' ? 0 : 10;
-    return sc/depth;
+    var sc = (status && isBot === false) === 'win' ? -10 -depth : status === 'draw' ? 0 : 10+depth;
+    return sc+ (depth);
   }
   if (isBot) {
     var bestScore = -Infinity;
