@@ -54,21 +54,31 @@ function posArrToBin(arr) {
   return pl;
 }
 
+
 function checkPlayerStatus(playerPositions, other) {
   let player = posArrToBin(playerPositions);
   return isWinner(player, other);
 }
 
-function isWinner(player, other) {
+function isWinner(player, other = []) {
+  let otherPl = posArrToBin(other);
   for (let condition of winingCombinations) {
     if ((player & condition) == condition) {
       return {
         status: 'win',
         condition,
+        player
+      };
+    }
+    if((otherPl & condition) == condition) {
+      return {
+        status: 'win',
+        condition,
+        player: otherPl
       };
     }
   }
-  if (other && (player | posArrToBin(other)) === 0b111111111) {
+  if (other && (player | otherPl) === 0b111111111) {
     return {
       status: 'draw',
       player,
@@ -79,14 +89,13 @@ function isWinner(player, other) {
     player,
   };
 }
-function getScore(board, depth, isBot, score= 0) {
+function getScore(board, depth, isBot) {
   var { ai, h, board } = board;
-  var status = checkPlayerStatus(ai, h).status;
-  console.log(board.join(''), depth, isBot, ai,h, score);
-
+  var {status, player} = checkPlayerStatus(ai, h);
+  
   if (/(win)|(draw)/.test(status)) {
-    var sc = (status && isBot === false) === 'win' ? -10 -depth : status === 'draw' ? 0 : 10+depth;
-    return sc+ (depth);
+    var sc = (status === 'win' &&  posArrToBin(h) === player) ? -10 : status === 'draw' ? 0 : 10;
+    return sc;
   }
   if (isBot) {
     var bestScore = -Infinity;
@@ -95,7 +104,7 @@ function getScore(board, depth, isBot, score= 0) {
       if (board[cp] === '0') {
         board[cp] = '1';
         ai.push(i);
-        score = getScore(
+        let score = getScore(
           {
             ai,
             h,
@@ -117,7 +126,7 @@ function getScore(board, depth, isBot, score= 0) {
       if (board[cp] === '0') {
         board[cp] = '1';
         h.push(i);
-        score = getScore(
+        let score = getScore(
           {
             ai,
             h,
